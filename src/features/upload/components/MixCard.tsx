@@ -12,13 +12,14 @@ type MixCardProps = {
 };
 
 export const MixCard: React.FC<MixCardProps> = ({ title, artist, urlPath, genres, host }) => {
-    const { videoId, isPlaying, setVideoId, togglePlay, setSongTitle, setSongArtist } = useMusicFeedStore(); 
+    const { videoId, isPlaying, setVideoId, togglePlay, setSongTitle, setSongArtist, setSongHost } = useMusicFeedStore(); 
 
     const handlePlay = () => {
         if (videoId !== urlPath) {
           setVideoId(urlPath);
           setSongArtist(artist);
           setSongTitle(title);
+          setSongHost(host);
         }
         togglePlay();
       };

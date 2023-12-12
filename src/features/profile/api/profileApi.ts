@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { EditProfileInput, UserFeed, UserProfile } from '..';
+import {UserFeed, UserProfile } from '..';
 import { BASE_URL } from '../../../config';
 
 

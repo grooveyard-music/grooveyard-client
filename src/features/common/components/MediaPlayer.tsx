@@ -6,7 +6,7 @@ import { Container } from '@mantine/core';
 import { formatTime } from '../../../util/FormatTime';
 
 export const MediaPlayer: React.FC = () => {
-  const { videoId, isPlaying, togglePlay, songTitle, songArtist } = useMusicFeedStore();
+  const { videoId, isPlaying, togglePlay, songTitle } = useMusicFeedStore();
   const youtubePlayerRef = useRef<any>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const [duration, setDuration] = useState<number>(0);
@@ -25,9 +25,10 @@ export const MediaPlayer: React.FC = () => {
     setDuration(youtubePlayerRef.current.getDuration());
   };
 
-  const handleStateChange = (event: any) => {
+  const handleStateChange = (_event: any) => {
     setCurrentTime(youtubePlayerRef.current.getCurrentTime());
   };
+  
 
   useEffect(() => {
     try {
@@ -45,11 +46,11 @@ export const MediaPlayer: React.FC = () => {
 
   useEffect(() => {
     let interval: number | undefined;
-    if (youtubePlayerRef.current && isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime(youtubePlayerRef.current.getCurrentTime());
-      }, 1000); // Update every 1 second
-    }
+      if (youtubePlayerRef.current && isPlaying) {
+        interval = setInterval(() => {
+          setCurrentTime(youtubePlayerRef.current.getCurrentTime());
+        }, 1000) as unknown as number; // Typecast to number
+      }
     return () => {
       clearInterval(interval); // Clear the interval when the component unmounts or when the video is paused
     };

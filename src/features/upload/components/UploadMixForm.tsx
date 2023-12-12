@@ -1,6 +1,6 @@
 
 import { useForm, zodResolver } from "@mantine/form";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation} from "react-query";
 import { useNavigate } from "react-router-dom";
 import { Autocomplete, Chip, TextInput} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -16,7 +16,7 @@ import { LoadingButton } from "../../common";
 export const UploadMixForm = () => {
 
     const store = useAuthStore();
-    const queryClient = useQueryClient();
+
     const navigate = useNavigate();
     const { genres } = useMusicFeedStore();
     const { refetch: refetchGenres } = useGetGenres();

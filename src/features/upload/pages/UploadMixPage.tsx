@@ -1,14 +1,12 @@
 
 import { Container } from '@mantine/core';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { UploadMixForm } from '..';
+import { FaArrowLeft } from 'react-icons/fa';
 
 
 
 export const UploadMixPage = () => {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-
 
   const navigate = useNavigate();
 
@@ -18,6 +16,9 @@ export const UploadMixPage = () => {
 
   return (
     <Container size="xl">
+        <div onClick={handleGoBack} style={{ cursor: 'pointer', marginBottom: '20px' }}>
+        <FaArrowLeft /> Go Back
+      </div>
    <UploadMixForm />
     </Container>
   );

@@ -34,11 +34,12 @@ export type RegisterInput = TypeOf<typeof registerSchema>;
      password: string; 
     }, unknown>;
 
- export interface IUseUser {
-    user: User | null | undefined;
-    isLoading: boolean;
-    refetchUser: TPageData
+    export interface IUseUser {
+      user: User | null | undefined;
+      isLoading: boolean;
+      refetchUser: () => void;
   }
+  
   
   /*SCHEMAS */
   export const loginSchema = z.object({

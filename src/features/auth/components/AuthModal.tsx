@@ -191,7 +191,7 @@ export const AuthModal = () => {
     interface ModalHeaderProps {
       title: string;
     }
-    const ModalHeader: React.FC<ModalHeaderProps> = ({ title }) => (
+    const ModalHeader: React.FC<ModalHeaderProps> = () => (
       <div style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px' }}>
         {getModalTitle()}
       </div>

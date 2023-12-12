@@ -1,13 +1,13 @@
 
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {useNavigate, useParams } from 'react-router-dom';
 import { CreatePostForm } from '../components/CreatePostForm';
 import { Container} from "@mantine/core";
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 
 export const CreatePostPage = () => {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const postTypeFromURL = params.get('type')
+  // const location = useLocation();
+  // const params = new URLSearchParams(location.search);
+  // const postTypeFromURL = params.get('type')
 
 
   const navigate = useNavigate();

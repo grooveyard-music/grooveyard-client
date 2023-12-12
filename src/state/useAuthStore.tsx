@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import { IUser, User } from '../features/auth/types/authTypes';
+import {  User } from '../features/auth/types/authTypes';
 import { UserProfile } from '../features/profile/types/profileTypes';
 
 interface AuthState {

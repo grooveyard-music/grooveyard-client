@@ -24,7 +24,7 @@ export function useSignUp(): IUseSignUp {
         navigate('/');
       },
       onError: (error) => {
-
+        console.error("Login error:", error);
       }
     });
   

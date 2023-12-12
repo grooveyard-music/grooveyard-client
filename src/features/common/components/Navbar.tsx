@@ -9,7 +9,7 @@ import { ProfileDropdownMenu } from './ProfileDropdownMenu';
 export function Navbar() {
 
 
-  const { openAuthModal, isAuthModalOpen } = useAuthStore();
+  const { openAuthModal } = useAuthStore();
   const isAuthenticated = useAuthStore((state) => state.user != null);
  
   return (

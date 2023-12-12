@@ -41,9 +41,9 @@ return (
           <Input onClick={handleInputClick} placeholder="Start a discussion..." readOnly />
           </div>
           </div>
-          {discussions.map((discussion: Discussion) => (
+          {discussions && discussions.map((discussion: Discussion) => (
             <DiscussionCard discussion={discussion} key={discussion.id} />
-          ))}
+        ))}
         </div>
       </div>
     </div>

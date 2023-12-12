@@ -23,6 +23,7 @@ export function useUser(): IUseUser {
         setUser(data);
       },
       onError: (error) => {
+        console.error("Login error:", error);
         clearUser();
       }
     }

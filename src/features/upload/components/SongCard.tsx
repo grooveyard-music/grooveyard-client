@@ -12,7 +12,7 @@ type SongCardProps = {
 };
 
 export const SongCard: React.FC<SongCardProps> = ({ title, artist, urlPath, genres, host }) => {
-    const { videoId, isPlaying, setVideoId, togglePlay, setSongTitle, setSongArtist } = useMusicFeedStore(); 
+    const { videoId, isPlaying, setVideoId, togglePlay, setSongTitle, setSongArtist,  setSongHost } = useMusicFeedStore(); 
 
     const handlePlay = () => {
    
@@ -20,6 +20,7 @@ export const SongCard: React.FC<SongCardProps> = ({ title, artist, urlPath, genr
           setVideoId(urlPath);
           setSongArtist(artist);
           setSongTitle(title);
+          setSongHost(host);
         }
         togglePlay();
       };

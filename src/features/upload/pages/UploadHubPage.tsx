@@ -1,18 +1,9 @@
 
 import {  Container, Group, Text, Image, Card, Grid, Title} from '@mantine/core';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
 export const UploadHubPage = () => {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-
-
-  const navigate = useNavigate();
-
-  const handleGoBack = () => {
-    navigate(-1);
-  }
 
   return (
 

@@ -17,14 +17,12 @@ export function useSignIn(): IUseSignIn {
         password
       }) => loginUser(email, password), {
       onSuccess: (data) => {
-        console.log(data);
         queryClient.setQueryData([QUERY_KEY.user], data);
-        localStorage.setItem('isLoggedIn', 'true');
         closeAuthModal();
         navigate('/');
       },
       onError: (error) => {
-
+        console.error("Login error:", error);
       }
     });
   

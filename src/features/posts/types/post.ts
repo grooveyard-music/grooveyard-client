@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Mix, Song } from '../../upload';
 
 export type TextPostInput = z.infer<typeof textPostSchema>;
 export type TrackPostInput = z.infer<typeof trackPostSchema>;

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IUser, User } from '../../auth/types/authTypes';
+import { User } from '../../auth/types/authTypes';
 import { Discussion, DiscussionInput, Genre } from '../types/discussion';
 import { BASE_URL } from '../../../config';
 
