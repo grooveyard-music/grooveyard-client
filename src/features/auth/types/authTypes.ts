@@ -1,5 +1,5 @@
 import { UseMutateFunction } from "react-query";
-import { TypeOf, z } from "zod";
+import { StringValidation, TypeOf, z } from "zod";
 
 export type LoginInput = TypeOf<typeof loginSchema>;
 export type RegisterInput = TypeOf<typeof registerSchema>;
@@ -21,6 +21,7 @@ export type RegisterInput = TypeOf<typeof registerSchema>;
     email: string;
     userName: string;
     roles: string[];
+    avatar: string;
   }
   
   export type IUseSignIn = UseMutateFunction<User, unknown, {

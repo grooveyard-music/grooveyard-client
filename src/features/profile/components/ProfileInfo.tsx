@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { EditProfileModal } from './EditProfileModal'
 import  useAuthStore  from '../../../state/useAuthStore';
 import { useGetUserProfile } from '../hooks/useGetUserProfile';
+import { updateUserAvatar } from '..';
 
 
 type ProfileViewProps = {
@@ -16,6 +17,43 @@ export const ProfileInfo: React.FC<ProfileViewProps> = (userId) => {
 const store = useAuthStore();
 
 var {data} = useGetUserProfile(userId.userId);
+const [isHovered, setIsHovered] = useState(false);
+const handleAvatarChange = (event: any) => {
+  const file = event.target.files[0];
+  if (file) {
+    updateUserAvatar(file).then(() => {
+     
+    }).catch(error => {
+      // Handle error
+    });
+  }
+};
+
+const overlayStyle: React.CSSProperties = {
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  color: 'white',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  opacity: 0,
+  transition: 'opacity 0.25s ease',
+  borderRadius: '50%',
+};
+
+const imageContainerStyle: React.CSSProperties = {
+  position: 'relative',
+  cursor: 'pointer',
+};
+
+const imageStyle: React.CSSProperties = {
+  borderRadius: '50%',
+};
+
 
 if (!data) {
   return <p>Loading...</p>;
@@ -27,28 +65,46 @@ if (!data) {
     <div className="px-6">
       <div className="flex flex-wrap justify-center">
         <div className="w-full px-4 flex justify-center">
-        <div className="relative">
-        <img alt="..." src={data?.avatarUrl} 
-          className="shadow-xl rounded-full h- align-middle border-none w-full"/>
-      </div>
+        <div 
+                style={imageContainerStyle}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                onClick={() => document.getElementById('avatarInput')?.click()}
+              >
+                <img
+                  alt="Avatar"
+                  src={data?.avatarUrl}
+                  style={imageStyle}
+                />
+                <div style={{ ...overlayStyle, opacity: isHovered ? 1 : 0 }}>
+                  <span>Click to change</span>
+                </div>
+                <input
+                  type="file"
+                  id="avatarInput"
+                  style={{ display: 'none' }}
+                  onChange={handleAvatarChange}
+                  accept="image/*"
+                />
+              </div>
         </div>
         <div className="w-full px-4 text-center ">
           <div className="flex justify-center py-4 lg:pt-4 pt-8">
             <div className="mr-4 p-3 text-center">
               <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                {data?.communityActivity?.postCount}
+                {data?.userActivity?.postCount}
               </span>
               <span className="text-sm text-blueGray-400">Posts</span>
             </div>
             <div className="mr-4 p-3 text-center">
               <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-              {data?.communityActivity?.discussionCount}
+              {data?.userActivity?.discussionCount}
               </span>
               <span className="text-sm text-blueGray-400">Discussions</span>
             </div>
             <div className="lg:mr-4 p-3 text-center">
               <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-              {data?.communityActivity?.commentCount}
+              {data?.userActivity?.commentCount}
               </span>
               <span className="text-sm text-blueGray-400">Comments</span>
             </div>

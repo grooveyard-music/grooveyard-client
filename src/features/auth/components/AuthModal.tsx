@@ -8,9 +8,6 @@ import useAuthStore from "../../../state/useAuthStore";
 import { checkEmailExists } from "../api/authApi";
 import { FaEnvelope, FaGoogle, FaSoundcloud } from "react-icons/fa";
 
-
-
-
 export const AuthModal = () => {
     const [emailExists, setEmailExists] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string>();
@@ -77,13 +74,12 @@ export const AuthModal = () => {
 
       const registerForm = useForm({
         initialValues: {
-          email: userEmail || '',
+          email: userEmail,
           username: '', // Add username field
           password: '',
         },
       
         validate: {
-          email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
           username: (value) => value ? null : 'Username is required', 
           password: (value) => {
             if (value.length < 8) {
@@ -102,9 +98,9 @@ export const AuthModal = () => {
 
       const handleEmailCheck = async (values: { email: string }) => {
         const exists = await checkEmailExists(values.email);
-        console.log(exists);
         setUserEmail(values.email);
-        setEmailExists(exists);
+        setEmailExists(exists ? exists : "");
+        registerForm.setFieldValue('email', values.email);
     };
 
     const handleLogin = async (values: { password: string }) => {
@@ -116,13 +112,13 @@ export const AuthModal = () => {
 
     };
 
-    const handleRegistration = async (values: { email: string, username: string, password: string }) => {
-      if (!values.email || !values.password || !values.username) {
+    const handleRegistration = async (values: { email: string | undefined, username: string, password: string }) => {
+      if (!values.password || !values.username) {
           console.error("Email or password is not set.");
           return;
       }
       console.log('Registration form values:', values);
-      signUp({ email: values.email, username: values.username, password: values.password });
+      signUp({ email: values.email!, username: values.username, password: values.password });
   };
   
 
@@ -140,7 +136,7 @@ export const AuthModal = () => {
               {renderSocialButtons()}
             </form>
             );
-        } else if (emailExists != null) {
+        } else if (emailExists) {
             return(
                 <form onSubmit={loginForm.onSubmit(handleLogin)}>
                   <Group spacing="sm" style={{ width: '100%', alignItems: 'center' }}>
@@ -162,12 +158,6 @@ export const AuthModal = () => {
         } else {
             return (
               <form onSubmit={registerForm.onSubmit(handleRegistration)}>
-            <TextInput
-                withAsterisk
-                label="Email"
-                placeholder="your@email.com"
-                {...registerForm.getInputProps('email')} 
-            />
              <TextInput
                 withAsterisk
                 label="Username"
@@ -181,7 +171,7 @@ export const AuthModal = () => {
                 {...registerForm.getInputProps('password')} 
             />
             <Group  mt="md" >
-                <Button type="submit">Submit</Button>
+                <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>Submit</Button>
             </Group>
         </form>
             );

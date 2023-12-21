@@ -8,13 +8,16 @@ import { deleteDiscussionFn } from '..';
 import  useAuthStore  from '../../../state/useAuthStore';
 import { DeleteModal } from '../../common';
 import { timeAgo } from '../../../util/TimeAgo';
+import useDeleteConfirmation from '../../common/hooks/useDeleteConfirmation';
 
 
 
 export const DiscussionCard: React.FC<{discussion: Discussion}> = ({ discussion }) => {
 
   const queryClient = useQueryClient();
- var store = useAuthStore();
+  var store = useAuthStore();
+
+  
   const { mutate: deleteDiscussion, isLoading} = useMutation(
     deleteDiscussionFn,
     {
@@ -37,13 +40,19 @@ export const DiscussionCard: React.FC<{discussion: Discussion}> = ({ discussion 
     deleteDiscussion(discussion.id);
   };
 
+
   return (
 <div className=" lg:max-w-full lg:flex relative">
-{discussion.createdById === store.user?.id && (
-          <div className="absolute top-5 right-5">
-            <DeleteModal deleteFn={handleDelete} isLoading={isLoading} name="Discussion"/>
-          </div>
-        )}
+<div className="absolute top-5 right-5">
+<DeleteModal 
+        deleteFn={handleDelete}
+        isLoading={isLoading}
+        name="Discussion"
+        currentUser={store.user}
+        createdByUserId={discussion.createdById}
+        itemToDelete={discussion}
+  />
+</div>
   <div className="border min-w-full shadow-lg border-gray-400 lg:border-t lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
     <div className="mb-4">
      
@@ -61,9 +70,13 @@ export const DiscussionCard: React.FC<{discussion: Discussion}> = ({ discussion 
       <p className="text-gray-700 text-base">{discussion.description}</p>
     <div className="flex items-center">
     <div className="text-gray-900 leading-none flex items-center mt-4"> 
-    <Link to={`/profile/${discussion.createdById}`}>
+    {discussion.createdById ? 
+     <Link to={`/profile/${discussion.createdById}`}>
+     <Avatar size="sm" radius="xl" src={discussion.createdByAvatar} alt="user avatar" />
+     </Link> :
     <Avatar size="sm" radius="xl" src={discussion.createdByAvatar} alt="user avatar" />
-    </Link>
+  }
+   
     <div className="ml-2 flex items-center">
         <span className="mr-2">{discussion.createdByUsername}</span>
         <span className="">&#8226;</span>      

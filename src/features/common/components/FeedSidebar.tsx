@@ -18,7 +18,7 @@ export function FeedSidebar() {
               {store.user?.userName} 
               <div className="ml-3"></div>
               <Indicator inline size={16} offset={7} position="bottom-end" color="green" withBorder>
-              <Avatar size="md" radius="xl"src={store.userProfile?.avatarUrl} alt="it's me" />
+              <Avatar size="md" radius="xl"src={store.user?.avatar} alt="it's me" />
               </Indicator>
                 </span>
               </div>

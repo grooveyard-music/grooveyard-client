@@ -1,12 +1,12 @@
 
 import { Container } from '@mantine/core';
 import {  useNavigate } from 'react-router-dom';
-import { UploadMixForm } from '..';
+import { UploadTrackForm } from '../components/UploadTrackForm';
 import { FaArrowLeft } from 'react-icons/fa';
 
 
 
-export const UploadMixPage = () => {
+export const UploadTrackPage = () => {
 
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ export const UploadMixPage = () => {
         <div onClick={handleGoBack} style={{ cursor: 'pointer', marginBottom: '20px' }}>
         <FaArrowLeft /> Go Back
       </div>
-   <UploadMixForm />
+   <UploadTrackForm />
     </Container>
   );
 };

@@ -5,15 +5,15 @@ export * from './api/uploadApi'
 /*Components*/ 
 export {MixCard} from './components/MixCard'
 export {SongCard} from './components/SongCard'
-export {UploadMixForm} from './components/UploadMixForm'
-export {UploadSongForm} from './components/UploadSongForm'
+export {UploadTrackForm} from './components/UploadTrackForm'
+
 
 
 /*Hooks*/ 
 
 /*Pages*/ 
 export {UploadHubPage} from './pages/UploadHubPage'
-export {UploadSongPage} from './pages/UploadSongPage'
-export {UploadMixPage} from './pages/UploadMixPage'
+export {UploadTrackPage} from './pages/UploadTrackPage'
+
 /* Types */
 export * from './types/uploadTypes'

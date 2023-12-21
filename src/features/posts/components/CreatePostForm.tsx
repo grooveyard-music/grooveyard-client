@@ -4,29 +4,32 @@ import { useMutation, useQueryClient } from "react-query";
 import { createPostFn } from "../api/postApi";
 import { notifications } from "@mantine/notifications";
 import useAuthStore from "../../../state/useAuthStore";
-import { PostEnum, TextPostInput, textPostSchema } from "../types/post";
+import { PostEnum, PostInput, postSchema } from "../types/post";
 import { useNavigate } from "react-router-dom";
 import { Container, Paper, Text, TextInput} from "@mantine/core";
-import { IoDiscOutline, IoMusicalNotes } from "react-icons/io5";
+import { IoMusicalNotes } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { LoadingButton } from "../../common";
 
 
 export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
-    const [attachedType, setAttachedType] = useState<'mix' | 'track' | null>(null);
+  const [attachedType, setAttachedType] = useState<'track' | null>(null);
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
     const store = useAuthStore();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
 
     const form = useForm({
-        validate: zodResolver(textPostSchema), 
-        initialValues: {
+      initialValues: {
           title: '',
           content: '',
-          type: PostEnum.Text,
-        },
-      });
+          type: PostEnum.Text, 
+          discussionId: discussionId, 
+          userId: store.user?.id || '',
+          trackId: null, 
+      },
+  });
       const handleSearch = async () => {
         // Make API call here based on searchQuery
         // For example:
@@ -39,54 +42,67 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
         }
       }, [searchQuery]);
 
-      const handleAttachMix = () => {
-        setAttachedType('mix');
-        // Here you can also open a modal or another component that lets the user search for their uploaded mixes or create a new one
-      };
     
-      const handleAttachTrack = () => {
+      const handleAttachTrack = (trackId: string) => {
         setAttachedType('track');
-        // Here you can also open a modal or another component that lets the user search for their uploaded tracks or create a new one
-      };
-      const { mutate: createTextPost, isLoading } = useMutation(
-        (textPostData: TextPostInput) => {
-          if (store.user) {
-            return createPostFn(textPostData, store.user, discussionId).then(response => {
-              if (response.status !== 200) {
-                throw new Error('API request failed');
-              }
-              return response.data;
-            });
-          } else {
-            throw new Error('User is not authenticated.');
-          }
-        },
-        {
+        setSelectedTrackId(trackId); // Save the selected track ID
+    };
+
+    const handleOpenTrackSelector = () => {
+      setAttachedType('track');
+
+    };
+  
+    const createPostMutation = useMutation(
+        createPostFn,
+      {
           onSuccess: () => {
-            notifications.show({
-              title: 'Success!',
-              message: 'Post has been successfully created',
-            });
-            queryClient.invalidateQueries(["getAllPosts"]);
-            queryClient.invalidateQueries(["getAllDiscussions"]);
-            queryClient.invalidateQueries(["fetchProfileOverview"]);
-            navigate(-1);
+              notifications.show({
+                  title: 'Success!',
+                  message: 'Post has been successfully created',
+              });
+              queryClient.invalidateQueries(["getAllPosts"]);
+              queryClient.invalidateQueries(["getAllDiscussions"]);
+              queryClient.invalidateQueries(["fetchProfileOverview"]);
+              navigate(-1);
           },
           onError: (error: any) => {
-            notifications.show({
-              title: 'Error!',
-              message: error.message,
-            });
+              notifications.show({
+                  title: 'Error!',
+                  message: error.message,
+              });
           },
-        }
-        );
-        const handleSubmit = (values: any) => {
-            createTextPost(values);
-        }
+      }
+  );
+
+  const handleSubmit = (values: any) => {
+    console.log(values);
+    if (!store.user) {
+        notifications.show({ title: 'Error!', message: 'User is not authenticated.' });
+        return;
+    }
+
+
+    const postData = {
+        title: values.title,
+        content: values.content,
+        type: selectedTrackId ? PostEnum.Track : PostEnum.Text ,
+        discussionId: discussionId,
+        userId: store.user.id,
+        trackId: selectedTrackId || undefined,
+    };
+    console.log(postData);
+    // Call mutation
+    createPostMutation.mutate(postData);
+  };
+
 
     return (
       <Container size="xl">
-        <form onSubmit={form.onSubmit(handleSubmit)}>
+        <form onSubmit={form.onSubmit((values) => {
+          console.log(values);
+            handleSubmit(values)
+        })}>
           <TextInput
         label="Title"
         placeholder="Enter post title"
@@ -100,29 +116,13 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
         {...form.getInputProps('content')}
       />
     <div className="mt-4 flex space-x-4 mb-5">
-          <Paper className="flex items-center cursor-pointer" onClick={handleAttachMix}>
-            <IoDiscOutline size={20} />
-            <Text>Add mix</Text>
-          </Paper>
-          <Paper className="flex items-center cursor-pointer" onClick={handleAttachTrack}>
+    <Paper className="flex items-center cursor-pointer" onClick={handleOpenTrackSelector}>
             <IoMusicalNotes size={20} />
             <Text>Add track</Text>
           </Paper>
-        </div>
-
-        {attachedType === 'track' && (
-          <>
-            <TextInput
-              label="Search for a track"
-              placeholder="Start typing to search..."
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
-            />
-            {/* Display searchResults here, allowing the user to select a track */}
-          </>
-        )}
+      </div>
       <LoadingButton
-        loading={isLoading}
+        loading={createPostMutation.isLoading}
         textColor="text-ct-blue-600"
       >
         Create Post

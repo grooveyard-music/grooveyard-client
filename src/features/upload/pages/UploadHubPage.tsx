@@ -20,48 +20,22 @@ export const UploadHubPage = () => {
         />
       </Card.Section>
       <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>Upload a mix</Text>
+        <Text weight={500}>Upload your own mix or track</Text>
       </Group>
    
       <Text size="sm" color="dimmed">
-       Upload your own mix or link one of your favorite mixes from Soundcloud or Mixcloud
+       Add a song or mix to your music box by pasting in a url from soundcloud or youtube
       </Text>
-      <Link to="/upload/mix">   
+      <Link to="/upload/track">   
       <div className="relative px-6 py-3 font-bold text-black group mt-10 w-1/3 mx-auto">
         <span className="absolute inset-0 w-full h-full transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-red-300 group-hover:translate-x-0 group-hover:translate-y-0"></span>
         <span className="absolute inset-0 w-full h-full border-4 border-black"></span>
-        <span className="relative">Upload mix</span>
+        <span className="relative">Add to musicbox</span>
       </div>
     </Link>
     </Card>
     </Grid.Col>
-    <Grid.Col span={4}>
-       <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Card.Section>
-        <Image
-          fit="inherit"
-          src="https://i.ytimg.com/vi/XV5eIo3-wAU/maxresdefault.jpg"
-          height={160}
-          alt="Norway"
-        />
-      </Card.Section>
 
-      <Group position="apart" mt="md" mb="xs">
-        <Text weight={500}>Upload a song</Text>
-      </Group>
-   
-      <Text size="sm" color="dimmed">
-       Upload your own original track or link one of your favorite tracks from Soundcloud or Youtube to add to your songbox.
-      </Text>
-      <Link to="/upload/song">   
-      <div className="relative px-6 py-3 font-bold text-black group mt-10 w-1/3 mx-auto">
-        <span className="absolute inset-0 w-full h-full transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-red-300 group-hover:translate-x-0 group-hover:translate-y-0"></span>
-        <span className="absolute inset-0 w-full h-full border-4 border-black"></span>
-        <span className="relative">Upload song</span>
-      </div>
-    </Link>
-    </Card>
-    </Grid.Col>
     <Grid.Col span={4}>
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Card.Section>

@@ -8,10 +8,14 @@ import { CommentCard, CreateCommentForm, Post, deletePostFn, togglePostLikeFn } 
 import { DeleteModal } from '../../common';
 import { Comment } from '..';
 import { timeAgo } from '../../../util/TimeAgo';
+import useAuthStore from '../../../state/useAuthStore';
 
 export const PostCard: React.FC<{post: Post}> = ({ post }) => {
   const queryClient = useQueryClient();
   const [showCommentForm, setShowCommentForm] = useState(false);
+  
+  var store = useAuthStore();
+
   const { mutate: deletePost, isLoading} = useMutation(
     deletePostFn,
     {
@@ -30,6 +34,7 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
       },
     }
   );
+
   const { mutate: togglePostLike} = useMutation(
     togglePostLikeFn,
     {
@@ -47,7 +52,7 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
   const handleDelete = () => {
     deletePost(post.id);
   };
-console.log(post);
+
   const handlePostLike = () => {
     togglePostLike(post.id);
   }
@@ -55,7 +60,14 @@ console.log(post);
     <> 
     <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 mb-4 flex flex-col justify-between relative mt-5">
       <div className="absolute top-2 right-2">
-        <DeleteModal deleteFn={handleDelete} isLoading={isLoading} name="Post"/>
+      <DeleteModal 
+        deleteFn={handleDelete}
+        isLoading={isLoading}
+        name="Post"
+        currentUser={store.user}
+        createdByUserId={post.createdById}
+        itemToDelete={post}
+      />
       </div>
       <Link to={`/post/${post.id}`}>
       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">{post.title}</h3>
@@ -66,13 +78,10 @@ console.log(post);
      
       <div className="text-gray-900 leading-none flex items-center"> 
       <Link to={`/profile/${post.createdById}`}> 
-      <p></p>
     <Avatar size="sm" radius="xl" src={post.createdByAvatar} alt="user avatar" />
     </Link>
     <div className="ml-2 flex items-center">
-
-        <span className="mr-2">{post.createdBy}</span>
-       
+        <span className="mr-2">{post.createdByUsername}</span>
         <span className="">&#8226;</span>      
         <span className="text-gray-500 text-sm ml-1">{timeAgo(post.createdAt)}</span>
     </div>
@@ -96,7 +105,6 @@ console.log(post);
       {showCommentForm && (
         <>
           <CreateCommentForm postId={post.id} />
-
           {post.comments && post.comments.slice(0, 5).map((comment: Comment) => (
             <CommentCard key={comment.id} comment={comment} />
           ))}

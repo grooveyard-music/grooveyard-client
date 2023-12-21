@@ -25,6 +25,7 @@ export const SongCard: React.FC<SongCardProps> = ({ title, artist, urlPath, genr
         togglePlay();
       };
 
+      console.log(title);
   return (
 
 <div className="flex items-center rounded-lg bg-white shadow-md p-4 mt-7">

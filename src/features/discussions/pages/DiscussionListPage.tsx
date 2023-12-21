@@ -35,7 +35,7 @@ return (
           </h2>
           <div className="flex pb-4"> 
           <div className="mr-4"> 
-          <Avatar size="md" radius="xl"src={store.userProfile?.avatarUrl} alt="it's me" />
+          <Avatar size="md" radius="xl"src={store.user?.avatar} alt="it's me" />
           </div>
           <div className="flex-grow">
           <Input onClick={handleInputClick} placeholder="Start a discussion..." readOnly />

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {UserFeed, UserProfile } from '..';
+import {EditProfileInput, UserFeed, UserProfile } from '..';
 import { BASE_URL } from '../../../config';
 
 
@@ -13,10 +13,10 @@ const musicApi = axios.create({
   withCredentials: true,
 });
 
-export const editUserProfileFn = async (formData: FormData) => {
-  const response = await userApi.put('profile/createprofile', formData, {
+export const editUserProfileFn = async (editProfileInput: EditProfileInput) => {
+  const response = await userApi.put('profile/updateprofile', editProfileInput, {
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'application/json' // Updated content type
     }
   });
   return response.data;
@@ -32,19 +32,24 @@ export const editUserProfileFn = async (formData: FormData) => {
     return response.data;
 };
 
-export async function fetchProfileOverview(userId: string) {
-  if (!userId) {
-      throw new Error("User ID not provided.");
-  }
-  
-  const userProfile = await getUserProfileFn(userId);
-  return userProfile;
-}
+
 
   export async function fetchUserProfileFeed(userId: string) {
-    const response = await musicApi.get<UserFeed>(`media/GetUserProfileFeed/${userId}`);
+    const response = await musicApi.get<UserFeed>(`media/musicbox/${userId}`);
     return response.data;
   };
+
+  
+  export async function updateUserAvatar(avatarFile: File) {
+    const formData = new FormData();
+    formData.append('avatar', avatarFile);
+  
+    const response = await musicApi.post(`profile/updateavatar/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  
+    return response.data;
+  }
 
   export async function checkDisplayName(displayName: string) {
     const response = await musicApi.post(`profile/check-name?displayName=${displayName}`);

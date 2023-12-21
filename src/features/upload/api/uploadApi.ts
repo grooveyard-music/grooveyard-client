@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UploadMixInput, UploadSongInput } from "..";
+import { UploadTrackInput } from "..";
 import { BASE_URL } from "../../../config";
 
 const uploadApi = axios.create({
@@ -8,12 +8,7 @@ const uploadApi = axios.create({
 });
 
 
-export async function uploadMixFn(formData: UploadMixInput) {
-    const response = await uploadApi.post(`upload/mix/`, formData);
-    return response.data;
-  };
-
-  export async function uploadSongFn(formData: UploadSongInput) {
-    const response = await uploadApi.post(`upload/song/`, formData);
+export async function uploadTrackFn(trackData: UploadTrackInput) {
+    const response = await uploadApi.post(`upload/track/`, trackData);
     return response.data;
   };

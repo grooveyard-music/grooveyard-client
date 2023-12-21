@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { CommentInput, PostInput } from '../types/post';
-import { User } from '../../auth/types/authTypes';
 import { BASE_URL } from '../../../config';
 
 const musicApi = axios.create({
@@ -14,13 +13,14 @@ console.log(response);
   return response.data;
 };
 
-export const createPostFn = async (postData: PostInput, userData: User, discussionId: string) => {
+export const createPostFn = async (postData: PostInput) => {
     try {
         const response = await musicApi.post('/Post/CreatePost', {
             Title: postData.title,
             Content: postData.content,
-            DiscussionId: discussionId,
-            UserId: userData.id
+            DiscussionId: postData.discussionId,
+            UserId: postData.userId,
+            Type: postData.type
         });
         return response.data;
     } catch (error) {
@@ -73,6 +73,23 @@ export const togglePostLikeFn = async (postId: string ) => {
   try {
       const response = await musicApi.post('/Post/post/like', {
         EntityId: postId
+      });
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          throw new Error(error.response?.data.message || "Could not create comment.");
+      } else {
+          throw error;
+      }
+  }
+};
+
+
+export const toggleCommentLikeFn = async (commentId: string ) => {
+  try {
+    console.log(commentId)
+      const response = await musicApi.post('/Post/comment/like', {
+        EntityId: commentId
       });
       return response.data;
   } catch (error) {

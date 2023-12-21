@@ -1,6 +1,6 @@
 
 import { ProfilePage } from "./features/profile";
-import { UploadHubPage, UploadMixPage, UploadSongPage } from "./features/upload";
+import { UploadHubPage, UploadTrackPage } from "./features/upload";
 import HomePage from "./pages/HomePage";
 import { CreatePostPage, PostDetailPage, PostListPage } from "./features/posts";
 import { CreateDiscussionPage, DiscussionListPage } from "./features/discussions";
@@ -27,8 +27,7 @@ const Routing: React.FC = () => {
         <Route path="/creatediscussion" element={<CreateDiscussionPage/>} />
         <Route path="/createpost/:discussionId" element={<CreatePostPage />} />
         <Route path="/upload" element={<UploadHubPage />} />
-        <Route path="/upload/mix" element={<UploadMixPage />} />
-        <Route path="/upload/song" element={<UploadSongPage />} />
+        <Route path="/upload/track" element={<UploadTrackPage />} />
       </Routes>
       <AuthModal />
       <Footer/>
