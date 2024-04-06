@@ -1,7 +1,7 @@
 import { Group, TextInput,  Textarea } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import  useAuthStore  from '../../../state/useAuthStore';
-import { DatePickerInput } from '@mantine/dates';
+import { DateInput } from '@mantine/dates';
 import { useMutation,   useQueryClient} from 'react-query';
 import { editUserProfileFn} from '../api/profileApi';
 import { notifications } from '@mantine/notifications';
@@ -76,10 +76,10 @@ export const EditProfileForm: React.FC<EditProfileFormProps> = ({setOpened }) =>
         })(event);
       }}>
       <TextInput label="Full Name" {...form.getInputProps('fullName')} />
-      <DatePickerInput label="Birthdate" {...form.getInputProps('birthdate')} />
+      <DateInput label="Birthdate" {...form.getInputProps('birthdate')} />
       <TextInput label="Location" {...form.getInputProps('location')} />
       <Textarea label="Biography" {...form.getInputProps('biography')} />
-      <Group position="right" mt="xl">
+      <Group mt="xl">
         <LoadingButton loading={isLoading}>Update Profile</LoadingButton>
       </Group>
     </form>

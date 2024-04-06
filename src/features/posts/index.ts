@@ -9,8 +9,8 @@ export {CreatePostForm} from './components/CreatePostForm'
 export {PostCard} from './components/PostCard'
 
 /*Hooks*/ 
-export {useGetComments} from './hooks/useGetComments';
-export {useGetPosts} from './hooks/useGetPosts';
+export {useGetPostAndComments} from './hooks/useGetPostAndComments';
+export {useGetPostsAndDiscussion} from './hooks/useGetPostsAndDiscussion';
 
 /*Pages*/ 
 export {CreatePostPage} from './pages/CreatePostPage'

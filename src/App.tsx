@@ -1,34 +1,23 @@
 
 import './App.css';
 import Routing from './Routes';
-import {MantineProvider } from '@mantine/core';
+import {MantineProvider, createTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { MediaPlayer } from './features/common';
 
-
 function App() {
-
+  const theme = createTheme({
+    fontFamily: 'Open Sans, sans-serif',
+    primaryColor: 'cyan',
+  });
 
   return (
-<div className="min-h-screen "> 
-      <MantineProvider withNormalizeCSS withGlobalStyles theme={{     components: {
-        Container: {
-          defaultProps: {
-            sizes: {
-              xs: 540,
-              sm: 720,
-              md: 960,
-              lg: 1140,
-              xl: 1536,
-            },
-          },
-        },
-      },loader: 'bars', fontFamily: 'Helvetica' }} >
+<div className="min-h-screen bg-slate-200 "> 
+<MantineProvider theme={theme}>
       <Notifications />
       <Routing />
       <MediaPlayer /> 
-
-      </MantineProvider>
+  </MantineProvider>
 </div>
   );
 }

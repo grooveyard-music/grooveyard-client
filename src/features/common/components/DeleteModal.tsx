@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal, Button } from '@mantine/core';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import useDeleteConfirmation from '../../common/hooks/useDeleteConfirmation';
@@ -10,7 +10,7 @@ type DeleteModalProps = {
   name: string;
   currentUser: User | null;
   createdByUserId: string;
-  itemToDelete: any; // Define the type based on your application's need
+  itemToDelete: any; 
 };
 
 export const DeleteModal: React.FC<DeleteModalProps> = ({ deleteFn, name, isLoading, currentUser, createdByUserId, itemToDelete }) => {

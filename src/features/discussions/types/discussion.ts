@@ -16,6 +16,8 @@ export interface Discussion  {
   createdByUsername: string;
   createdById: string;
   createdByAvatar: string;
+  subscriptionCount: number;
+  postCount: number;
   };
 
 export interface Genre {

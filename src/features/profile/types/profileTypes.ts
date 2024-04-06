@@ -19,7 +19,8 @@ export interface UserProfile {
     location?: string;
     biography?:string;
     avatarUrl?: string;
-    userActivity: UserActivity
+    coverUrl?: string;
+    userActivity: UserActivity;
 }
 
 export interface UserActivity {

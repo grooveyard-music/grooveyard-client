@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Track } from '../../upload';
 
 export type CommentInput = z.infer<typeof commentSchema>;
 export type PostInput = z.infer<typeof postSchema>;
@@ -14,6 +15,7 @@ export interface Post {
   createdByUsername: string;
   createdById: string;
   createdByAvatar: string;
+  track?: Track;
 };
 
   export interface Comment {
@@ -25,6 +27,11 @@ export interface Post {
     createdById: string;
     totalLikes: number;
   };
+
+  export interface TrackOption {
+    value: string;
+    label: string;
+  }
   
   export enum PostEnum {
     Text = 1,

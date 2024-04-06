@@ -39,7 +39,7 @@ authApi.interceptors.response.use(
         return authApi(originalRequest);
       } catch (refreshError) {
         // If refreshing the token also fails, handle logout or redirect to login page
-        useAuthStore.setState({ user: null }); // Update your state store to indicate the user is no longer logged in
+        useAuthStore.setState({ user: null }); 
 
         return Promise.reject(refreshError);
       }
@@ -84,7 +84,7 @@ export const verifyEmailFn = async (verificationCode: string) => {
 };
 
 export const logoutUserFn = async (userId: string) => {
-  console.log(userId);
+
   await authApi.post('/Account/revoke-token');
   const response = await authApi.post('/Account/logout', userId);
   return response.data;

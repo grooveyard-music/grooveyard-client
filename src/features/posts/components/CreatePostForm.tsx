@@ -4,12 +4,13 @@ import { useMutation, useQueryClient } from "react-query";
 import { createPostFn } from "../api/postApi";
 import { notifications } from "@mantine/notifications";
 import useAuthStore from "../../../state/useAuthStore";
-import { PostEnum, PostInput, postSchema } from "../types/post";
+import { PostEnum, PostInput, TrackOption, postSchema } from "../types/post";
 import { useNavigate } from "react-router-dom";
-import { Container, Paper, Text, TextInput} from "@mantine/core";
+import { Autocomplete, Container, Paper, Text, TextInput, Textarea} from "@mantine/core";
 import { IoMusicalNotes } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { LoadingButton } from "../../common";
+import { searchUserMusicbox } from "../../profile/api/profileApi";
 
 
 export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
@@ -18,7 +19,39 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
     const store = useAuthStore();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<TrackOption[] | undefined>(undefined);
+
+
+    const handleSearch = async (value: string) => {
+      if (value) {
+        const tracks = await searchUserMusicbox(store.user?.id || '', value);
+       console.log(tracks);
+        const formattedTracks: SetStateAction<undefined> | { value: string; label: string; }[] = [];
+    
+        // Iterate through each track and format it based on its type
+        tracks.forEach((track) => {
+          if (track.songs) {
+            // Assuming each track contains multiple songs
+            track.songs.forEach((song) => {
+              formattedTracks.push({
+                value: track.id, // Use the song's ID as the unique identifier
+                label: `${song.artist} - ${song.title}`, // Format the label as "Artist - Title"
+              });
+            });
+          } else if (track.mixes) {
+            // Assuming each track contains multiple mixes
+            track.mixes.forEach((mix) => {
+              formattedTracks.push({
+                value: track.id, // Use the mix's ID as the unique identifier
+                label: `${mix.artist} - ${mix.title}`, // Format the label as "Artist - Title"
+              });
+            });
+          }
+        });
+        console.log(formattedTracks);
+        setSearchResults(formattedTracks);
+      }
+    };
 
     const form = useForm({
       initialValues: {
@@ -30,17 +63,7 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
           trackId: null, 
       },
   });
-      const handleSearch = async () => {
-        // Make API call here based on searchQuery
-        // For example:
-        // const results = await searchSongsAPI(searchQuery);
-        // setSearchResults(results);
-      };
-      useEffect(() => {
-        if (searchQuery) {
-          handleSearch();
-        }
-      }, [searchQuery]);
+
 
     
       const handleAttachTrack = (trackId: string) => {
@@ -61,7 +84,7 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
                   title: 'Success!',
                   message: 'Post has been successfully created',
               });
-              queryClient.invalidateQueries(["getAllPosts"]);
+              queryClient.invalidateQueries(["getAllPostsAndDiscussion"]);
               queryClient.invalidateQueries(["getAllDiscussions"]);
               queryClient.invalidateQueries(["fetchProfileOverview"]);
               navigate(-1);
@@ -76,7 +99,7 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
   );
 
   const handleSubmit = (values: any) => {
-    console.log(values);
+  
     if (!store.user) {
         notifications.show({ title: 'Error!', message: 'User is not authenticated.' });
         return;
@@ -91,7 +114,7 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
         userId: store.user.id,
         trackId: selectedTrackId || undefined,
     };
-    console.log(postData);
+
     // Call mutation
     createPostMutation.mutate(postData);
   };
@@ -100,7 +123,7 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
     return (
       <Container size="xl">
         <form onSubmit={form.onSubmit((values) => {
-          console.log(values);
+        
             handleSubmit(values)
         })}>
           <TextInput
@@ -109,7 +132,7 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
         required
         {...form.getInputProps('title')}
       />
-      <TextInput
+      <Textarea
         label="Content"
         placeholder="Enter post content"
         required
@@ -121,6 +144,16 @@ export const CreatePostForm = ({ discussionId }: { discussionId: string }) => {
             <Text>Add track</Text>
           </Paper>
       </div>
+      {attachedType === 'track' && (
+      <Autocomplete
+      label="Search and select a track"
+      placeholder="Type to search..."
+      data={searchResults ?? []} // Ensure data is never undefined
+      onChange={(value) => handleSearch(value)} // Assume onChange is the correct prop for capturing input
+      onOptionSubmit={(item) => handleAttachTrack(item)}
+      required={attachedType === 'track'}
+    />
+        )}
       <LoadingButton
         loading={createPostMutation.isLoading}
         textColor="text-ct-blue-600"

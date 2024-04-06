@@ -4,14 +4,18 @@ import { useForm } from '@mantine/form';
 import { useState } from "react";
 import { useSignIn } from "../hooks/useSignIn";
 import { useSignUp } from "../hooks/useSignUp";
-import useAuthStore from "../../../state/useAuthStore";
+
 import { checkEmailExists } from "../api/authApi";
 import { FaEnvelope, FaGoogle, FaSoundcloud } from "react-icons/fa";
+import useModalStore from "../../../state/useModalStore";
+import useAuthStore from "../../../state/useAuthStore";
 
 export const AuthModal = () => {
     const [emailExists, setEmailExists] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string>();
-    const { isAuthModalOpen, closeAuthModal } = useAuthStore();
+    const {error} = useAuthStore();
+    const { modals, closeModal } = useModalStore(); 
+    const isOpen = modals['auth'] || false;
     const signIn = useSignIn();
     const signUp = useSignUp();
 
@@ -25,17 +29,16 @@ export const AuthModal = () => {
   
 
     const buttonStyle = {
-      width: '70%', 
-
+      width: '50%', 
       margin: 'auto', 
     };
   
     const renderSocialButtons = () => (
-      <Group spacing="sm" style={{ width: '100%', alignItems: 'center' }}>
-        <Button leftIcon={<FaGoogle />} onClick={handleGoogleLogin} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>
+      <Group gap="sm" style={{ width: '100%', alignItems: 'center' }}>
+        <Button leftSection={<FaGoogle />} onClick={handleGoogleLogin} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>
           Continue with Google
         </Button>
-        <Button leftIcon={<FaSoundcloud />} onClick={handleSoundCloudLogin} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>
+        <Button leftSection={<FaSoundcloud />} onClick={handleSoundCloudLogin} className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>
           Continue with SoundCloud
         </Button>
       </Group>
@@ -117,7 +120,7 @@ export const AuthModal = () => {
           console.error("Email or password is not set.");
           return;
       }
-      console.log('Registration form values:', values);
+
       signUp({ email: values.email!, username: values.username, password: values.password });
   };
   
@@ -126,9 +129,9 @@ export const AuthModal = () => {
         if (emailExists === null) {
             return (
               <form onSubmit={checkEmailForm.onSubmit(handleEmailCheck)}>
-               <Group spacing="sm" style={{ width: '100%', alignItems: 'center' }}>
+               <Group gap="sm" style={{ width: '100%', alignItems: 'center' }}>
               <TextInput  placeholder="your@email.com" {...checkEmailForm.getInputProps('email')} style={buttonStyle} />
-              <Button leftIcon={<FaEnvelope />} type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>
+              <Button leftSection={<FaEnvelope />} type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>
                 Continue with Email
               </Button>
               </Group>
@@ -139,11 +142,12 @@ export const AuthModal = () => {
         } else if (emailExists) {
             return(
                 <form onSubmit={loginForm.onSubmit(handleLogin)}>
-                  <Group spacing="sm" style={{ width: '100%', alignItems: 'center' }}>
+                  <Group gap="sm" style={{ width: '100%', alignItems: 'center' }}>
                   <TextInput
                     withAsterisk
                     label="Password"
                     placeholder="your@email.com"
+                    type="password"
                     style={buttonStyle}
                     {...loginForm.getInputProps('password')}
                     />
@@ -167,9 +171,12 @@ export const AuthModal = () => {
             <TextInput
                 withAsterisk
                 label="Password"
+                type="password"
                 placeholder="Enter your password"
                 {...registerForm.getInputProps('password')} 
             />
+
+        {error && <div style={{ color: 'red', textAlign: 'center' }}>{error.response.data}</div>}
             <Group  mt="md" >
                 <Button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style={buttonStyle}>Submit</Button>
             </Group>
@@ -201,10 +208,13 @@ export const AuthModal = () => {
 
     return (
       <>
-        <Modal opened={isAuthModalOpen} onClose={closeAuthModal} 
-        centered className="modal-open" size="md">
+        <Modal  opened={isOpen}
+        onClose={() => closeModal('auth')}
+        centered className="modal-open" size="lg">
         <ModalHeader title="Login or Sign Up" />
+        <div className="pb-8"> 
         {renderForm()}
+        </div>
         </Modal>
 
       </>

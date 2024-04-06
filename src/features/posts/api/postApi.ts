@@ -9,18 +9,20 @@ const musicApi = axios.create({
 
 export const getPostsFn = async (discussionId: string) => {
   const response = await musicApi.get(`/Post/GetPosts/${discussionId}`);
-console.log(response);
+
   return response.data;
 };
 
 export const createPostFn = async (postData: PostInput) => {
     try {
+   
         const response = await musicApi.post('/Post/CreatePost', {
             Title: postData.title,
             Content: postData.content,
             DiscussionId: postData.discussionId,
             UserId: postData.userId,
-            Type: postData.type
+            Type: postData.type,
+            TrackId: postData.trackId
         });
         return response.data;
     } catch (error) {
@@ -46,8 +48,22 @@ export const createPostFn = async (postData: PostInput) => {
     }
   };
 
-  export const getCommentsFn = async (postId: string) => {
-    const response = await musicApi.get(`/Post/GetComments/${postId}`);
+
+  export const deleteCommentFn = async (commentId: string) => {
+    try {
+      const response = await musicApi.delete(`/Post/DeleteComment/${commentId}`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data.message || "Could not delete post.");
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  export const getPostAndCommentsFn = async (postId: string) => {
+    const response = await musicApi.get(`/Post/GetPost/${postId}`);
   
     return response.data;
   };
@@ -87,7 +103,7 @@ export const togglePostLikeFn = async (postId: string ) => {
 
 export const toggleCommentLikeFn = async (commentId: string ) => {
   try {
-    console.log(commentId)
+
       const response = await musicApi.post('/Post/comment/like', {
         EntityId: commentId
       });

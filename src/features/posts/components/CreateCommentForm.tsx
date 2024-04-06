@@ -1,6 +1,6 @@
 
 import { useForm, zodResolver } from '@mantine/form';
-import { TextInput, Group, Button} from "@mantine/core"
+import { TextInput, Group, Button, Textarea} from "@mantine/core"
 import { useMutation,  useQueryClient } from "react-query";
 import { notifications } from '@mantine/notifications';
 import { IoMdPaperPlane } from 'react-icons/io'; 
@@ -38,7 +38,8 @@ export const CreateCommentForm: React.FC<CreateCommentProps> = ({postId}) => {
           title: 'Success!',
           message: 'Comment has been successfully created',
         });
-        queryClient.invalidateQueries(["getAllPosts"]);
+        queryClient.invalidateQueries(["getAllPostsAndDiscussion"]);
+        queryClient.invalidateQueries(["getPostAndComments"]);
         queryClient.invalidateQueries(["fetchProfileOverview"]);
       },
       onError: (error: any) => {
@@ -54,23 +55,15 @@ export const CreateCommentForm: React.FC<CreateCommentProps> = ({postId}) => {
     <form onSubmit={form.onSubmit((values: CommentInput) => { 
       createComment(values);
     })}>
-      <Group spacing="xs">
-        <TextInput
-          label="Comment"
-          {...form.getInputProps('content')}
-          rightSection={
-            <Button
-              component="button" 
-              type="submit"
-              leftIcon={<IoMdPaperPlane />}
-              variant="outline"
-              size="xs" // Adjust the size to align well with the input
-              disabled={isLoading}
-            />
-          }
-          rightSectionWidth={40} // You might need to adjust this for better alignment
-        />
-      </Group>
+
+        <div className="mt-6">
+            <label htmlFor="comment" className="block text-sm font-medium text-gray-700">Leave a comment</label>
+            <Textarea 
+            {...form.getInputProps('content')}
+            id="comment" placeholder="Type your comment here" className="mt-1" />
+            <Button type="submit" className="mt-2">Comment</Button>
+          </div>
+
     </form>
   );
 };

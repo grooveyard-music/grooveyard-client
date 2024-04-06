@@ -1,24 +1,34 @@
 import { useMutation, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { TextInput, Select, Group, Button, Modal, Box, Stack, Text, Autocomplete } from "@mantine/core";
-import { useState } from "react";
+import { TextInput,  Group, Button, Modal, Box, Stack, Text, Autocomplete, Pill, Select } from "@mantine/core";
+import { SetStateAction, useState } from "react";
 import { notifications } from "@mantine/notifications";
-import { UploadTrackInput, uploadTrackFn } from "..";
+import { SoundCloudTrack, SpotifyTrack, UploadTrackInput, uploadTrackFn } from "..";
 import useAuthStore from "../../../state/useAuthStore";
 import { FaSoundcloud, FaSpotify, FaYoutube } from "react-icons/fa";
 import { GENRE_LIST } from "../../../config";
+import { IoReturnUpBackSharp } from "react-icons/io5";
+import SpotifyAutocomplete from "./SpotifyAutocomplete";
+import useModalStore from "../../../state/useModalStore";
+import YoutubeAutocomplete from "./YoutubeAutocomplete";
+import SoundcloudAutocomplete from "./SoundcloudAutocomplete";
+
+
 
 export const UploadTrackModal = () => {
+
     const store = useAuthStore();
     const navigate = useNavigate();
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-    const [inputValue, setInputValue] = useState<string>('');
-    const [trackType, setTrackType] = useState<'song' | 'mix'>('song');
     const queryClient = useQueryClient();
-    const [isModalOpen, setModalOpen] = useState(false);
     const [host, setHost] = useState(null);
+    const [selectedSpotifyTrack, setSelectedSpotifyTrack] = useState<SpotifyTrack | null>(null);
+    const [selectedSoundCloudTrack, setSelectedSoundCloudTrack] = useState<SoundCloudTrack | null>(null);
+    const { modals, closeModal } = useModalStore(); 
+    const isOpen = modals['musicbox'] || false;
 
-    const { mutate: createTrack, isLoading } = useMutation(
+ 
+    const { mutate: createTrack } = useMutation(
       async (uploadTrackData: UploadTrackInput) => {
           if (!store.user) {
               throw new Error('User is not authenticated.');
@@ -32,7 +42,7 @@ export const UploadTrackModal = () => {
                   message: 'Track has been successfully uploaded',
               });
               queryClient.invalidateQueries(["fetchUserProfileFeed"]);
-              navigate(-1); 
+              closeModal("musicbox");
           },
           onError: (error: any) => {
               notifications.show({
@@ -43,62 +53,123 @@ export const UploadTrackModal = () => {
       }
   );
 
-  
-  const handleSubmit = (values) => {
-    // Submission logic here
+  const handleSubmit = () => {
+    if (selectedSpotifyTrack) {
+        const uploadTrackData = {
+            artist: selectedSpotifyTrack.artist,
+            title: selectedSpotifyTrack.name,
+            DurationInMilliseconds: selectedSpotifyTrack.DurationInMilliseconds,
+            type: selectedSpotifyTrack.type,
+            uri: selectedSpotifyTrack.uri,
+            genres: selectedGenres,
+            host: selectedSpotifyTrack.host
+        };
+        createTrack(uploadTrackData);
+    }
 };
 
-      const HostIcon = ({ icon, label }) => (
+
+    const HostIcon = ({ icon, label } : {icon: any, label: any}) => (
         <Button onClick={() => setHost(label)} variant="subtle">
             {icon}
         </Button>
     );
 
-    const FormFields = () => (
-      <>
-         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '200px' }}> 
-                    <Stack align="center" spacing="md"> 
-          <TextInput placeholder="Artist" required />
-          <TextInput placeholder="Title" required />
-          <Autocomplete
-              placeholder="Genre"
-              data={GENRE_LIST} 
-              required
-          />
-          <Button onClick={handleSubmit}>Submit</Button>
-          <Button variant="subtle" onClick={() => setHost(null)}>Back to Host Selection</Button>
-          </Stack>
-          </Box>
-      </>
-  );
+    const handleSpotifySelectTrack = (track: SetStateAction<SpotifyTrack | null>) => {
+        setSelectedSpotifyTrack(track);
+    };
 
+    const handleSoundCloudSelectTrack = (track: SetStateAction<SoundCloudTrack | null>) => {
+        setSelectedSoundCloudTrack(track);
+    };
+
+    const handleGenreSelect = (value: string) => {
+        setSelectedGenres((currentGenres) => [...currentGenres, value]);
+    };
+
+    const removeGenre = (genreToRemove: string) => {
+        setSelectedGenres((currentGenres) => 
+            currentGenres.filter((genre) => genre !== genreToRemove)
+        );
+    };
+
+    const platformOptions = [
+        { value: 'spotify', label: 'Spotify' },
+        { value: 'youtube', label: 'YouTube' },
+        { value: 'soundcloud', label: 'SoundCloud' },
+      ];
+    
+
+
+    const HostDropdown= () => {
+        switch (host) {
+          case 'spotify':
+            return  <SpotifyAutocomplete onTrackSelect={handleSpotifySelectTrack} />;
+          case 'youtube':
+              return  <YoutubeAutocomplete onTrackSelect={handleSoundCloudSelectTrack} />;
+          case 'soundcloud':
+            return  <SoundcloudAutocomplete onTrackSelect={handleSoundCloudSelectTrack} />;       
+          default:
+            return ""; // or some default content
+        }
+      };
+
+console.log(selectedSoundCloudTrack);
+    if (!isOpen) return null;
 
     return (
         <>
-          <Button className="mr-10 rounded-md border-2 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none text-black" onClick={() => setModalOpen(true)}>
-            Music box
-        </Button>
-        <Modal
-            opened={isModalOpen}
-            onClose={() => setModalOpen(false)}
-    
-            size="lg"
-            centered
-        >
-            {!host && (
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '150px' }}> 
-                    <Stack align="center" spacing="md"> 
-                        <Text pb={10}>Choose Host</Text>
-                        <Group position="center">                
-                            <HostIcon icon={<FaYoutube size={30} />} label="YouTube" />
-                            <HostIcon icon={<FaSpotify size={30} />} label="Spotify" />
-                            <HostIcon icon={<FaSoundcloud size={30} />} label="SoundCloud" />
-                        </Group>
-                    </Stack>
-                </Box>
-            )}
+       <Modal
+      opened={isOpen}
+      onClose={() => closeModal('musicbox')}
+      size="lg"
+      centered
+      classNames={{
 
-            {host && <FormFields />}
+        header: 'border-none',
+        close: 'text-white',
+        body: 'p-5'
+      }}
+      title={<Text className="text-white font-bold text-lg">Add to musicbox</Text>}
+    >
+     <Select
+          label="Music Platform"
+          placeholder="Select platform"
+          data={platformOptions}
+          value={host}
+          onChange={(value) => setHost(value)}
+          required
+          classNames={{ label: 'text-white', input: 'bg-dark-600 text-white' }}
+        />
+
+      <div className="mt-4 mb-4"> 
+      {host && <HostDropdown/>}
+      </div>
+      <Autocomplete
+                    placeholder="Genre"
+                    data={GENRE_LIST}
+                    onOptionSubmit={( value ) => handleGenreSelect(value)}
+                    required
+                />
+                <div>
+                    {selectedGenres.map((genre) => (
+                        <Pill
+                            key={genre}
+                            onRemove={() => removeGenre(genre)}
+                            withRemoveButton
+                        >
+                            {genre}
+                        </Pill>
+                    ))}
+                </div>
+      <Group mt="md">
+        <Button onClick={() => closeModal('musicbox')} variant="default">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="filled">
+          Submit
+        </Button>
+      </Group>
         </Modal>
         </>
     );

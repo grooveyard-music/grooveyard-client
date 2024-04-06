@@ -14,18 +14,17 @@ type ProfileViewProps = {
 export const ProfileFeed: React.FC<ProfileViewProps> = (userId) => {
 
   const { data: userFeed } = useQuery(["fetchUserProfileFeed", userId.userId], () => fetchUserProfileFeed(userId.userId), {
-    staleTime: 1000 * 60 * 5, // data is fresh for 5 minutes
-    cacheTime: 1000 * 60 * 30, // data stays in the cache for 30 minutes
+    staleTime: 1000 * 60 * 5, 
+    cacheTime: 1000 * 60 * 30, 
   });
-  
-  console.log(userFeed);
+
   return (
 
 <div className="min-h-fit text-center  ">
 <Tabs color="gray" variant="pills" radius="lg" defaultValue="song" >
     <Tabs.List>
-      <Tabs.Tab value="song" icon={<BsMusicNoteBeamed  />}>Music box</Tabs.Tab>
-      <Tabs.Tab value="tracklist" icon={<Si1001Tracklists />}>Tracklists</Tabs.Tab>
+      <Tabs.Tab value="song" leftSection={<BsMusicNoteBeamed  />}>Music box</Tabs.Tab>
+      <Tabs.Tab value="tracklist" leftSection={<Si1001Tracklists />}>Tracklists</Tabs.Tab>
     </Tabs.List>
       <Tabs.Panel value="tracklist" pt="xs">
       {userFeed?.tracklists?.length ? (
@@ -45,36 +44,31 @@ export const ProfileFeed: React.FC<ProfileViewProps> = (userId) => {
         )}
       </Tabs.Panel>
       <Tabs.Panel value="song" pt="xs">
-          {userFeed?.tracks?.length ? (
-            userFeed.tracks.map((track) => (
-              track.type === "song" ? (
-                <SongCard 
-                key={track.id}
-                title={track.song?.title || 'Default Title'}
-                artist={track.song?.artist || 'Default Artist'}
-                urlPath={track.song?.urlPath || 'Default URL'}
-                genres={track.song?.genres || []}
-                host={track.song?.host || 'Default Host'}
-                />
-              ) : (
-                <MixCard 
-                key={track.id}
-                title={track.song?.title || 'Default Title'}
-                artist={track.song?.artist || 'Default Artist'}
-                urlPath={track.song?.urlPath || 'Default URL'}
-                genres={track.song?.genres || []}
-                host={track.song?.host || 'Default Host'}
-                />
-              )
-            ))
-          ) : (
-            <div className="flex-1 flex items-center justify-center mt-40"> 
-              <div>
-                <p>Nothing has been added yet.</p>
-                {/* Your button for creating new content */}
-              </div>
-            </div>
-          )}
+      {userFeed?.tracks?.length ? (
+  userFeed.tracks.map((track) => (
+    track.songs?.length > 0 ? (
+      <SongCard 
+        key={track.id}
+        songs={track.songs || []} 
+      />
+    ) : (
+      track.mixes?.length > 0 ? (
+        <MixCard 
+          key={track.id}
+          mixes={track.mixes || []}
+        />
+      ) : null
+    )
+  ))
+) : (
+  <div className="flex-1 flex items-center justify-center mt-40"> 
+    <div>
+      <p>Nothing has been added yet.</p>
+      {/* Your button for creating new content */}
+    </div>
+  </div>
+)}
+
         </Tabs.Panel>
     </Tabs>
     </div>

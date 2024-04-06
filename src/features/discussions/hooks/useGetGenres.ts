@@ -13,11 +13,11 @@ export const useGetGenres = () => {
     refetchOnReconnect: false,
     select: (data) => data,
     onSuccess: (data) => {
-      console.log(data);
+
       musicFeedStore.setGenres(data.map((genreObj: { name: string; }) => genreObj.name));
     },
     onError: (error) => {
-      console.log(error);
+  
       if (Array.isArray((error as any).message)) {
         (error as any).response.data.error.forEach((el: any) =>
           notifications.show({

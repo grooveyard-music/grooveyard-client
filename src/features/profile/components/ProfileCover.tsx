@@ -1,10 +1,18 @@
 import { AspectRatio, BackgroundImage } from '@mantine/core'
 import React, { useState } from 'react'
+import { useQueryClient } from 'react-query';
+import useAuthStore from '../../../state/useAuthStore';
+import { updateUserCover } from '..';
+import { notifications } from '@mantine/notifications';
+type ProfileCoverProps = {
+  coverUrl: string | undefined;
+}
 
-export const ProfileCover: React.FC = () => {
-
+export const ProfileCover = React.memo(({ coverUrl }: ProfileCoverProps) => {
+console.log(coverUrl);
   const [isHovered, setIsHovered] = useState(false);
-
+  const queryClient = useQueryClient();
+  const store = useAuthStore();
   const coverOverlayStyle: React.CSSProperties = {
     position: 'absolute',
     top: 0,
@@ -28,19 +36,32 @@ export const ProfileCover: React.FC = () => {
   const handleCoverChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Function to handle file upload
+      if(!store.user?.id)
+    {
+      return null;
+    }
+      updateUserCover(file, store.user?.id).then(() => {
+        queryClient.invalidateQueries(["getUserProfile"])
+       }).catch(error => {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to upload cover photo: ' + error.message,
+        });
+       });
     }
   };
   return (
 <>
 <AspectRatio ratio={10 / 2} style={coverContainerStyle}>
+    
         <BackgroundImage
-          src="https://images.pexels.com/photos/3377405/pexels-photo-3377405.jpeg?cs=srgb&dl=pexels-el%C4%ABna-ar%C4%81ja-3377405.jpg&fm=jpg"
+          src={coverUrl ? coverUrl : ""}
           radius="sm"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onClick={() => document.getElementById('coverInput')?.click()}
         >
+    
           <div style={{ ...coverOverlayStyle, opacity: isHovered ? 1 : 0 }}>
             <span>Click to change</span>
           </div>
@@ -56,4 +77,4 @@ export const ProfileCover: React.FC = () => {
     </>
   )
 }
-
+);

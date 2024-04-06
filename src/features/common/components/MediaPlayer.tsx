@@ -1,112 +1,86 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useMusicFeedStore } from '../../../state/useMusicStore';
-import YouTube from 'react-youtube';
-import { FaPlay, FaPause, FaCircle } from 'react-icons/fa'; 
-import { Container } from '@mantine/core';
+
+import { FaPlay, FaPause, FaCircle, FaSpotify, FaVolumeUp } from 'react-icons/fa'; 
+import { Container, Slider } from '@mantine/core';
 import { formatTime } from '../../../util/FormatTime';
+import { SpotifyPlayerComponent } from './SpotifyPlayer';
 
 export const MediaPlayer: React.FC = () => {
-  const { videoId, isPlaying, togglePlay, songTitle } = useMusicFeedStore();
-  const youtubePlayerRef = useRef<any>(null);
-  const progressBarRef = useRef<HTMLDivElement>(null);
-  const [duration, setDuration] = useState<number>(0);
+  const { playbackUri, isPlaying, togglePlay, songTitle, songHost, songArtist, position, duration, setSongPosition, setSongDuration } = useMusicFeedStore();
+
+  const [volume, setVolume] = useState<number>(0.5);
+
   const [currentTime, setCurrentTime] = useState<number>(0);
 
-  const opts = {
-    height: '0',
-    width: '0',
-    playerVars: {
-      autoplay: 0,
-    },
+  const handleVolumeChange = (value: number) => {
+    setVolume(value);
   };
 
-  const handleReady = (event: any) => {
-    youtubePlayerRef.current = event.target;
-    setDuration(youtubePlayerRef.current.getDuration());
-  };
-
-  const handleStateChange = (_event: any) => {
-    setCurrentTime(youtubePlayerRef.current.getCurrentTime());
-  };
-  
-
-  useEffect(() => {
-    try {
-      if (youtubePlayerRef.current) {
-        if (isPlaying) {
-          youtubePlayerRef.current.playVideo();
-        } else {
-          youtubePlayerRef.current.pauseVideo();
-        }
-      }
-    } catch (e) {
-      console.error("Error interacting with YouTube player:", e);
-    }
-  }, [isPlaying, videoId]);
-
-  useEffect(() => {
-    let interval: number | undefined;
-      if (youtubePlayerRef.current && isPlaying) {
-        interval = setInterval(() => {
-          setCurrentTime(youtubePlayerRef.current.getCurrentTime());
-        }, 1000) as unknown as number; // Typecast to number
-      }
-    return () => {
-      clearInterval(interval); // Clear the interval when the component unmounts or when the video is paused
-    };
-  }, [isPlaying, youtubePlayerRef.current]);
-
-  const handleProgressBarClick = (e: React.MouseEvent) => {
-    if (progressBarRef.current) {
-      const rect = progressBarRef.current.getBoundingClientRect();
-      const newPosition = ((e.clientX - rect.left) / rect.width) * duration;
-      youtubePlayerRef.current.seekTo(newPosition);
-      setCurrentTime(newPosition);
+  const handlePositionChange = (percentage: number) => {
+    if (duration) {
+      const newPosition = (percentage / 100) * duration; 
+      setSongPosition(newPosition);
     }
   };
 
-  if (!videoId) {
+
+  if (!playbackUri) {
     return null;
   }
+  const sliderValue = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  console.log(duration)
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4">
-      <Container size="xl">
-        <button onClick={togglePlay}>
-          {isPlaying ? <FaPause /> : <FaPlay />}
-        </button>
-        {videoId && (
-          <div>
-            Now Playing: {songTitle}
-          </div>
-        )}
-        <div className="flex items-center justify-between">
-        <span>{formatTime(currentTime)}</span>
-          <div 
-            ref={progressBarRef}
-            className="relative w-full h-2 bg-gray-600 mt-2 cursor-pointer"
-            onClick={handleProgressBarClick}
-          >
-            <div 
-              className="absolute left-0 h-2 bg-blue-500" 
-              style={{ width: `${(currentTime / duration) * 100}%` }}
-            >
-              <div 
-                className="absolute right-0 top-0 bottom-0 flex items-center justify-center cursor-pointer"
-              >
-                <FaCircle />
-              </div>
-            </div>
-          </div>
-          <span>{formatTime(Math.floor(duration))}</span>
+    <Container size="xl" className="flex justify-between items-center">
+      <div className="flex-1 flex items-center min-w-0">
+        <div className="flex flex-col items-start mr-4">
+          <div className="text-lg truncate">{songTitle}</div>
+          <div className="text-sm truncate">{songArtist}</div>
         </div>
-        <YouTube 
-          videoId={videoId || ""} 
-          opts={opts} 
-          onReady={handleReady} 
-          onStateChange={handleStateChange}
+      </div>
+
+      <div className="flex-1 flex justify-center ">
+        <button onClick={togglePlay}>{isPlaying ? <FaPause /> : <FaPlay />}</button>
+        <div className="relative flex-1 mx-4">
+        <Slider
+            value={sliderValue} 
+            onChange={handlePositionChange} 
+            min={0}
+            max={100} 
+            step={0.1}
+            styles={{ track: { backgroundColor: 'gray' }, bar: { backgroundColor: 'blue' }, thumb: { borderColor: 'blue' } }}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span>{formatTime(duration)}</span>
+        </div>
+      </div>
+
+      <div className="flex-1 flex justify-end items-center min-w-0">
+        <FaVolumeUp className="mr-2" />
+        <Slider
+          label="Volume"
+          min={0} max={1} step={0.01}
+          value={volume}
+          onChange={handleVolumeChange}
+          styles={{ track: { backgroundColor: 'gray' }, thumb: { borderColor: 'blue' } }}
+          className="w-24"
         />
-      </Container>
-    </div>
+      </div>
+    </Container>
+
+    {songHost === 0 && 
+         <SpotifyPlayerComponent
+         spotifyUserAccessToken={localStorage.getItem('spotifyUserAccessToken')?.toString() || ''}
+         playbackUri={playbackUri}
+         isPlaying={isPlaying}
+         volume={volume}
+         position={position}
+         setDuration={setSongDuration}
+       />
+      }
+  </div>
   );
 };

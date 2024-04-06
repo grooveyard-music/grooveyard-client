@@ -21,7 +21,7 @@ export const CreatePostPage = () => {
   }
 
   return (
-    <Container size="xl">
+    <Container size="xl" className="min-h-[55rem]">
        <div className="mb-4 flex items-center">
 
       <IoArrowBackCircleOutline size={20} onClick={handleGoBack} />

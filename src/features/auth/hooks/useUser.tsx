@@ -10,11 +10,12 @@ export function useUser(): IUseUser {
   const { setUser, clearUser } = useAuthStore();
 
   const isLoggedIn = getCookie("IsLoggedIn") === "true";
+
   const { data: user, refetch, isError, isLoading } = useQuery<User | null>(
     [QUERY_KEY.user],
     getUser,
     {
-      enabled: isLoggedIn, // Only run this query if the user is logged in
+      enabled: isLoggedIn,
       refetchOnMount: isLoggedIn,
       refetchOnWindowFocus: isLoggedIn,
       refetchOnReconnect: isLoggedIn,

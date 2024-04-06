@@ -1,45 +1,26 @@
+import { Container } from "@mantine/core";
 
 
 export function Footer() {
   
   return (
-   
-<footer className="block">
-  <div className="px-5 md:px-10">
-    <div className="mx-auto w-full max-w-7xl">
-      <div className="py-16 md:py-24 lg:py-32">
-        <div className="flex-col flex items-center">
-          <a href="#" className="mb-8 inline-block max-w-full text-black">
-            <img src="https://assets.website-files.com/6458c625291a94a195e6cf3a/6458c625291a94d6f4e6cf96_Group%2047874-3.png" alt="" className="inline-block max-h-10 max-w-full"/>
-          </a>
-          <div className="text-center font-semibold max-[991px]:ml-0 max-[991px]:mr-0 max-[991px]:py-1">
-            <a href="#" className="inline-block px-6 py-2 font-normal text-black transition hover:text-[#d6a701]">About</a>
-            <a href="#" className="inline-block px-6 py-2 font-normal text-black transition hover:text-[#d6a701]">Features</a>
-            <a href="#" className="inline-block px-6 py-2 font-normal text-black transition hover:text-[#d6a701]">Works</a>
-            <a href="#" className="inline-block px-6 py-2 font-normal text-black transition hover:text-[#d6a701]">Support</a>
-            <a href="#" className="inline-block px-6 py-2 font-normal text-black transition hover:text-[#d6a701]">Help</a>
+    <footer className="bg-white text-white min-h-44 border-t-4 mt-20">
+    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-start py-8">
+        <div className="flex flex-col">
+          <h1 className="text-xl font-bold text-indigo-600">Grooveyard<sup className="text-xs">®</sup></h1>
+          <a href="mailto:hello@grooveyard.com" className="text-indigo-400 hover:text-indigo-300 mt-4">Get in touch! ✉️ hello@grooveyard.com</a>
+        </div>
+        <div className="flex flex-col items-end">
+          <div className="mb-4">
+            <a href="/terms" className="text-gray-400 hover:text-gray-300">Terms & Conditions</a>
+            <span className="mx-2">|</span>
+            <a href="/privacy" className="text-gray-400 hover:text-gray-300">Privacy Policy</a>
           </div>
-          <div className="mb-8 mt-8 [border-bottom:1px_solid_rgb(0,_0,_0)] w-48">
-          </div>
-          <div className="mb-12 grid-cols-4 grid-flow-col grid w-full max-w-[208px] gap-3">
-            <a href="#" className="mx-auto flex-col flex max-w-[24px] items-center justify-center text-black">
-              <img src="https://assets.website-files.com/6458c625291a94a195e6cf3a/6458c625291a945b4ae6cf7b_Vector-1.svg" alt="" className="inline-block max-w-full" />
-            </a>
-            <a href="#" className="mx-auto flex-col flex max-w-[24px] items-center justify-center text-black">
-              <img src="https://assets.website-files.com/6458c625291a94a195e6cf3a/6458c625291a945560e6cf77_Vector.svg" alt="" className="inline-block max-w-full"/>
-            </a>
-            <a href="#" className="mx-auto flex-col flex max-w-[24px] items-center justify-center text-black">
-              <img src="https://assets.website-files.com/6458c625291a94a195e6cf3a/6458c625291a940535e6cf7a_Vector-3.svg" alt="" className="inline-block max-w-full"/>
-            </a>
-            <a href="#" className="mx-auto flex-col flex max-w-[24px] items-center justify-center text-black">
-              <img src="https://assets.website-files.com/6458c625291a94a195e6cf3a/6458c625291a9433a9e6cf88_Vector-2.svg" alt="" className="inline-block max-w-full"/>
-            </a>
-          </div>
-          <p className="max-[479px]:text-sm">© Copyright 2021. All rights reserved.</p>
+          <p className="text-xs text-gray-500">Copyright © 2010-2023 Typeset. All rights reserved.</p>
         </div>
       </div>
     </div>
-  </div>
-</footer>
+  </footer>
   )
 }

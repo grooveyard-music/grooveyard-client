@@ -25,6 +25,11 @@ const response = await musicApi.get<Discussion[]>('/Discussion/GetLatestDiscussi
   return response.data;
 };
 
+export const getDiscussionFn = async (discussionId: string) => {
+  const response = await musicApi.get<Discussion>(`/Discussion/GetDiscussion/${discussionId}`)
+    return response.data;
+  };
+
 export const getAllGenres = async () => {
   const response = await musicApi.get<Genre[]>('/Discussion/GetAllGenres');
   return response.data;
@@ -42,3 +47,31 @@ export const deleteDiscussionFn = async (discussionId: string) => {
     }
   }
 };
+
+
+export const subscribeToDiscussion = async (discussionId: string) => {
+  try {
+    const response = await musicApi.post(`/Discussion/SubscribeToDiscussion/${discussionId}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || "Could not delete discussion.");
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const checkUserSubscription = async (discussionId: string) => {
+  try {
+    const response = await musicApi.get(`/Discussion/IsSubscribed/${discussionId}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message);
+    } else {
+      throw error;
+    }
+  }
+};
+

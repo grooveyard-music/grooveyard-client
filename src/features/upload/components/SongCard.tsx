@@ -1,58 +1,59 @@
-// MixCard.tsx
-import React from 'react';
-import { FaPlay, FaPause } from 'react-icons/fa'; 
-import { Badge } from '@mantine/core';
+import React, { useState, useEffect } from 'react';
+import { FaHeart, FaRetweet, FaPlus, FaPlayCircle, FaPauseCircle } from 'react-icons/fa'; 
 import { useMusicFeedStore } from '../../../state/useMusicStore';
+import { Song } from '..';
+
 type SongCardProps = {
-  title: string,
-  artist: string,
-  urlPath: string,
-  genres: string[],
-  host: string
+  songs: Song[],
 };
 
-export const SongCard: React.FC<SongCardProps> = ({ title, artist, urlPath, genres, host }) => {
-    const { videoId, isPlaying, setVideoId, togglePlay, setSongTitle, setSongArtist,  setSongHost } = useMusicFeedStore(); 
+export const SongCard: React.FC<SongCardProps> = ({ songs }) => {
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const { isPlaying, playbackUri, togglePlay, setPlaybackUri, setSongArtist, setSongTitle, setSongHost } = useMusicFeedStore();
 
-    const handlePlay = () => {
-   
-        if (videoId !== urlPath) {
-          setVideoId(urlPath);
-          setSongArtist(artist);
-          setSongTitle(title);
-          setSongHost(host);
-        }
-        togglePlay();
-      };
+  useEffect(() => {
+    setSelectedSong(songs.length > 0 ? songs[0] : null);
+  }, [songs]);
 
-      console.log(title);
+  const handlePlay = () => {
+    if (selectedSong) {
+      if (playbackUri !== selectedSong.uri) {
+        setSongHost(selectedSong.host);
+        setSongArtist(selectedSong.artist);
+        setSongTitle(selectedSong.title);
+        setPlaybackUri(selectedSong.uri);
+      }
+      togglePlay();
+    }
+  };
+
   return (
+    <div className="flex items-center rounded-lg bg-white shadow-md p-4 mt-7">
+      {/* Album Art */}
+      <div className="flex items-center mr-4">
+        <img src={selectedSong?.albumImageUrl} alt={selectedSong?.title} className="w-16 h-16 rounded" />
+        <button onClick={handlePlay} className="ml-4">
 
-<div className="flex items-center rounded-lg bg-white shadow-md p-4 mt-7">
+          {isPlaying && playbackUri == selectedSong?.uri  ? <FaPauseCircle size={32} className="text-gray-700 hover:text-gray-900" /> : <FaPlayCircle size={32} className="text-gray-700 hover:text-gray-900"  />}
+        </button>
+      </div>
 
-<button onClick={handlePlay} className="mr-4">
-  {isPlaying && videoId === urlPath ? <FaPause size={24} /> : <FaPlay size={24} />}
-</button>
+      {/* Song Info */}
+      <div className="flex-grow">
+        <h3 className="text-lg font-semibold">{selectedSong?.title}</h3>
+        <figcaption className="text-sm text-gray-500">{selectedSong?.artist}</figcaption>
+      </div>
 
+      {/* Meta Data */}
+      <div className="flex items-center ml-auto">
+        <FaHeart className="text-gray-500 mr-2" />
+        <span className="text-sm text-gray-500 mr-4">5</span>
+        <FaRetweet className="text-gray-500 mr-2" />
+        <span className="text-sm text-gray-500">5</span>
+        <FaPlus className="text-gray-500 ml-4" />
+      </div>
 
-  <div className="flex-grow">
-    <figcaption className="text-sm text-gray-500">
-      {artist}
-    </figcaption>
-    <h3 className="text-xl font-semibold">
-      {title}
-    </h3>
-  </div>
-
-  <div className="ml-auto">
-  {genres.map((genre: string) => (
-  <Badge key={genre} className="ml-3">
-    {genre}
-  </Badge> 
-     ))}
-  </div>
-</div>
-
-   
+      
+    </div>
   );
 };

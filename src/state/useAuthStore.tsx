@@ -11,9 +11,6 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
   setError: (error: Error | null) => void;
   clearUser: () => void;
-  openAuthModal: () => void;
-  closeAuthModal: () => void;
-  isAuthModalOpen: boolean;
   userProfile: UserProfile | null;
   setUserProfile: (user: UserProfile | null) => void;
   reset: () => void; 
@@ -30,8 +27,6 @@ const useAuthStore = create<AuthState>((set) => ({
    setError: (error) => set({ error }),
    clearUser: () => set({ user: null, isAuthenticated: false }),
    isAuthModalOpen: false,
-   openAuthModal: () => set({ isAuthModalOpen: true }),
-   closeAuthModal: () => set({ isAuthModalOpen: false }),
    setUserProfile: (user) => set((state) => ({ ...state, userProfile: user })),
    reset: () => set(() => ({ 
     user: null,

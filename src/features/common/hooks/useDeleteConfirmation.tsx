@@ -2,7 +2,7 @@ import {useState } from 'react';
 import { User } from '../../auth';
 
 const useDeleteConfirmation = (
-  deleteFunction: (item: any) => void, // Correct the function type
+  deleteFunction: (item: any) => void,
   currentUser: User | null, 
   createdByUserId: string
 ) => {
@@ -10,7 +10,7 @@ const useDeleteConfirmation = (
   const [itemToDelete, setItemToDelete] = useState(null);
 
   const canDelete = () => {
-    return currentUser?.id === createdByUserId || currentUser?.roles.includes("Admin");
+    return currentUser?.id === createdByUserId || currentUser?.roles?.includes("Admin");
   };
 
 

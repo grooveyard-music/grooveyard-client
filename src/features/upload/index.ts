@@ -12,7 +12,7 @@ export {UploadTrackModal} from './components/UploadTrackModal'
 /*Hooks*/ 
 
 /*Pages*/ 
-export {UploadHubPage} from './pages/UploadHubPage'
+
 
 
 /* Types */

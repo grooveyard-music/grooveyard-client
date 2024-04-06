@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../../state/useAuthStore";
 import { IUseSignIn, User, loginUser } from "..";
 import { QUERY_KEY } from "../../../config";
+import useModalStore from "../../../state/useModalStore";
 
 
 
 export function useSignIn(): IUseSignIn {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const { closeAuthModal } = useAuthStore();
+    const { closeModal } = useModalStore(); 
   
     const { mutate: signInMutation } = useMutation<User, unknown, { email: string, password: string }, unknown>(
       ({
@@ -18,8 +19,8 @@ export function useSignIn(): IUseSignIn {
       }) => loginUser(email, password), {
       onSuccess: (data) => {
         queryClient.setQueryData([QUERY_KEY.user], data);
-        closeAuthModal();
-        navigate('/');
+        closeModal('auth')
+        navigate('/dashboard');
       },
       onError: (error) => {
         console.error("Login error:", error);

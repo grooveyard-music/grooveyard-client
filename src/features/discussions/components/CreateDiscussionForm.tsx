@@ -6,22 +6,19 @@ import { createDiscussionFn } from "../api/discussionApi";
 import  useAuthStore from "../../../state/useAuthStore";
 import { notifications } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
-import { useMusicFeedStore } from "../../../state/useMusicStore";
-import { useGetGenres } from "../hooks/useGetGenres";
 import { useState } from "react";
-import { Autocomplete, Chip, Group, TextInput } from "@mantine/core";
+import { Autocomplete, Button, Chip, Group, Pill, Radio, Switch, TextInput, Textarea } from "@mantine/core";
 import { LoadingButton } from "../../common";
+import { GENRE_LIST } from "../../../config";
 
 
 export const CreateDiscussionForm = () => {
     const store = useAuthStore();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-
-    const { genres } = useMusicFeedStore();
-    const { refetch: refetchGenres } = useGetGenres();
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-    const [inputValue, setInputValue] = useState<string>('');
+    const [communityType, setCommunityType] = useState('public');
+    const [nsfw, setNsfw] = useState(false);
     
     const form = useForm({
         validate: zodResolver(discussionSchema),
@@ -31,11 +28,11 @@ export const CreateDiscussionForm = () => {
           Genres: [] // Add this line
         },
       });
-    
-
+  
     const { mutate: createDiscussion, isLoading } = useMutation(
         (musicData: DiscussionInput) => {
           if(store.user) {
+            musicData.Genres = selectedGenres;
             return createDiscussionFn(musicData, store.user);
           } else {
             throw new Error('User is not authenticated.');
@@ -61,59 +58,86 @@ export const CreateDiscussionForm = () => {
         }
       );
   
-    const handleGenreSelect = (genre: string) => {
-        setSelectedGenres((prev) => [...prev, genre]);
-        setInputValue('');  // Clear input field after selecting a genre
-      }
-      const handleGenreRemove = (genre: string) => {
-        setSelectedGenres((prev) => prev.filter((g) => g !== genre));
-      }
+      const handleGenreSelect = (value: string) => {
+        setSelectedGenres((currentGenres) => [...currentGenres, value]);
+    };
+
+    const removeGenre = (genreToRemove: string) => {
+        setSelectedGenres((currentGenres) => 
+            currentGenres.filter((genre) => genre !== genreToRemove)
+        );
+    };
+
     return (
-        <form onSubmit={form.onSubmit((values: DiscussionInput) => {
-            values.Genres = selectedGenres; 
-            createDiscussion(values)
-        })}>
-            <TextInput
-                withAsterisk
-                label="Title"
-                {...form.getInputProps('Title')}
-            />
-            <TextInput
-                withAsterisk
-                label="Description"
-                mt="sm"
-                {...form.getInputProps('Description')}
-            />
-            <Autocomplete
-                label="What genre?"
-                placeholder="Type or pick one"
-                data={genres || []} 
-                value={inputValue}
-                onFocus={() => refetchGenres()}
-                onChange={(value: string) => setInputValue(value)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault(); 
-                        handleGenreSelect(inputValue)
-                    }
-                }}
-            />
-            <div className="flex mt-3">
-                {selectedGenres.map((genre) => (
-                    <div key={genre} className="flex mr-2">
-                        <Chip onClick={() => handleGenreRemove(genre)} checked={true}>{genre}</Chip>
-                    </div>
-                ))}
-            </div>
-            <Group position="right" mt="xl">
-                <LoadingButton
-                    loading={isLoading}
-                    textColor="text-ct-blue-600"
-                >
-                    Create Discussion
-                </LoadingButton>
-            </Group>
-        </form>
+      <div className="bg-white p-5 rounded-lg shadow-md">
+      <form onSubmit={form.onSubmit((values) => {
+        createDiscussion(values);
+      })}>
+        <TextInput
+          withAsterisk
+          label="Name"
+          placeholder="Enter your community name"
+          {...form.getInputProps('Title')}
+        />
+        
+        <Textarea
+          withAsterisk
+          label="Description"
+          mt="sm"
+          placeholder="Community description"
+          {...form.getInputProps('Description')}
+        />
+
+        {/* Community Type Radio Group */}
+        <div className="mt-5">
+          <Radio.Group
+            value={communityType}
+            onChange={setCommunityType}
+            label="Community type"
+          >
+            <Radio value="public" label="Public" />
+            <Radio value="restricted" label="Restricted" />
+            <Radio value="private" label="Private" />
+          </Radio.Group>
+        </div>
+
+
+      <div className="mt-5 ">
+        {/* Selected Genres */}
+        <Autocomplete
+                    placeholder="Genre"
+                    data={GENRE_LIST}
+                    onOptionSubmit={( value ) => handleGenreSelect(value)}
+       
+                />
+                <div className="mt-5">
+                    {selectedGenres.map((genre) => (
+                        <Pill
+                            key={genre}
+                            onRemove={() => removeGenre(genre)}
+                            withRemoveButton
+                        >
+                            {genre}
+                        </Pill>
+                    ))}
+                </div>
+          </div>
+        {/* Action Buttons */}
+        <Group mt="xl">
+          <LoadingButton
+            loading={isLoading}
+            textColor="text-ct-blue-600" 
+          >
+            Create Topic
+          </LoadingButton> 
+          <Button
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </Button>
+        </Group>
+      </form>
+    </div>
     );
   };
   

@@ -48,7 +48,7 @@ export const ProfileDropdownMenu: React.FC<DropdownMenuProps> = () => {
           variants={{
             open: {
               clipPath: "inset(0% 0% 0% 0% round 10px)",
-              transform: "translateX(-130%)",
+              transform: "translateX(-110%)",
               transition: {
                 type: "spring",
                 bounce: 0,

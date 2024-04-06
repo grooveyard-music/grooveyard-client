@@ -1,33 +1,34 @@
 import React, { useState } from 'react'
 import { EditProfileModal } from './EditProfileModal'
 import  useAuthStore  from '../../../state/useAuthStore';
-import { useGetUserProfile } from '../hooks/useGetUserProfile';
-import { updateUserAvatar } from '..';
+import { UserProfile, updateUserAvatar } from '..';
+import { useQueryClient } from 'react-query';
 
 
 type ProfileViewProps = {
-  userId: string;
+  userProfile: UserProfile | undefined;
 }
 
-export const ProfileInfo: React.FC<ProfileViewProps> = (userId) => {
-
-  if (!userId) {
-    return <p>Error: User not found.</p>;
-  }
+export const ProfileInfo: React.FC<ProfileViewProps> = (props) => {
 const store = useAuthStore();
-
-var {data} = useGetUserProfile(userId.userId);
 const [isHovered, setIsHovered] = useState(false);
+const queryClient = useQueryClient();
+
 const handleAvatarChange = (event: any) => {
   const file = event.target.files[0];
-  if (file) {
-    updateUserAvatar(file).then(() => {
-     
+  if (file) {  
+    if(!store.user?.id)
+    {
+      return
+    }
+    updateUserAvatar(file, store.user?.id).then(() => {
+     queryClient.invalidateQueries(["getUserProfile"])
     }).catch(error => {
       // Handle error
     });
   }
 };
+
 
 const overlayStyle: React.CSSProperties = {
   position: 'absolute',
@@ -55,7 +56,7 @@ const imageStyle: React.CSSProperties = {
 };
 
 
-if (!data) {
+if (!props.userProfile) {
   return <p>Loading...</p>;
 }
 
@@ -73,7 +74,7 @@ if (!data) {
               >
                 <img
                   alt="Avatar"
-                  src={data?.avatarUrl}
+                  src={props.userProfile?.avatarUrl}
                   style={imageStyle}
                 />
                 <div style={{ ...overlayStyle, opacity: isHovered ? 1 : 0 }}>
@@ -92,19 +93,19 @@ if (!data) {
           <div className="flex justify-center py-4 lg:pt-4 pt-8">
             <div className="mr-4 p-3 text-center">
               <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                {data?.userActivity?.postCount}
+                {props.userProfile?.userActivity?.postCount}
               </span>
               <span className="text-sm text-blueGray-400">Posts</span>
             </div>
             <div className="mr-4 p-3 text-center">
               <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-              {data?.userActivity?.discussionCount}
+              {props.userProfile?.userActivity?.discussionCount}
               </span>
               <span className="text-sm text-blueGray-400">Discussions</span>
             </div>
             <div className="lg:mr-4 p-3 text-center">
               <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-              {data?.userActivity?.commentCount}
+              {props.userProfile?.userActivity?.commentCount}
               </span>
               <span className="text-sm text-blueGray-400">Comments</span>
             </div>
@@ -112,19 +113,19 @@ if (!data) {
         </div>
       </div>
       <div className="flex justify-center">
-      {userId?.userId === store.user?.id && <EditProfileModal/>} 
+      {props.userProfile?.userId === store.user?.id && <EditProfileModal/>} 
       </div>
       <div className="text-center mt-12">
         <h3 className="text-xl font-semibold leading-normal text-blueGray-700 mb-2">
-          {data?.fullName}
+          {props.userProfile?.fullName}
         </h3>
         <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
           <i className="fas fa-map-marker-alt mr-2 text-lg text-blueGray-400"></i>
-          {data?.location}
+          {props.userProfile?.location}
         </div>
         <div className="mb-2 text-blueGray-600">
           <i className="fas fa-university mr-2 text-lg text-blueGray-400"></i>
-          <p><strong>Date of Birth:</strong> {data?.birthdate ? new Date(data?.birthdate).toLocaleDateString() : 'Not set'}</p>
+          <p><strong>Date of Birth:</strong> {props.userProfile?.birthdate ? new Date(props.userProfile?.birthdate).toLocaleDateString() : 'Not set'}</p>
 
         </div>
       </div>
@@ -132,7 +133,7 @@ if (!data) {
         <div className="flex flex-wrap justify-center">
           <div className="w-full lg:w-9/12 px-4">
             <p className="mb-4 text-lg leading-relaxed text-blueGray-700">
-            {data?.biography}
+            {props.userProfile?.biography}
             </p>
           </div>
         </div>

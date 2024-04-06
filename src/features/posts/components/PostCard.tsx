@@ -9,11 +9,12 @@ import { DeleteModal } from '../../common';
 import { Comment } from '..';
 import { timeAgo } from '../../../util/TimeAgo';
 import useAuthStore from '../../../state/useAuthStore';
+import { SongCard } from '../../upload/components/SongCard';
 
 export const PostCard: React.FC<{post: Post}> = ({ post }) => {
   const queryClient = useQueryClient();
   const [showCommentForm, setShowCommentForm] = useState(false);
-  
+  console.log(post);
   var store = useAuthStore();
 
   const { mutate: deletePost, isLoading} = useMutation(
@@ -24,7 +25,7 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
           title: 'Success!',
           message: 'Post has been successfully deleted',
         });
-        queryClient.invalidateQueries(["getAllPosts"]);
+        queryClient.invalidateQueries(["getAllPostsAndDiscussion"]);
       },
       onError: (error: any) => {
         notifications.show({
@@ -39,7 +40,7 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
     togglePostLikeFn,
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["getAllPosts"]);
+        queryClient.invalidateQueries(["getAllPostsAndDiscussion"]);
       },
       onError: (error: any) => {
         notifications.show({
@@ -56,6 +57,11 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
   const handlePostLike = () => {
     togglePostLike(post.id);
   }
+
+  const handlePlayTrack = (uri: string) => {
+    console.log(`Playing track URI: ${uri}`);
+    // Implement the play functionality or navigate to the track page
+  };
   return (
     <> 
     <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4 mb-4 flex flex-col justify-between relative mt-5">
@@ -73,6 +79,16 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">{post.title}</h3>
       </Link>
       <p className="mt-1 text-sm text-gray-500 mb-2">{post.content}</p>
+      {post.track && post.track.songs && post.track.songs.length > 0 && (
+         <>
+            {post.track.songs.map((song) => (
+               <SongCard 
+               key={song.id}
+               songs={post.track?.songs  || []} 
+             />
+            ))}
+         </>
+        )}
       <div className="mt-2 text-sm text-gray-500 ">
       <div className="text-sm mt-4">
      
@@ -87,7 +103,7 @@ export const PostCard: React.FC<{post: Post}> = ({ post }) => {
     </div>
     </div>
         <p className="text-gray-600"></p>
-    
+     
       </div>
         <div className="flex flex-col items-end ">
                     <div className="flex items-center cursor-pointer">
